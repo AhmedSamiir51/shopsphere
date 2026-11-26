@@ -16,7 +16,7 @@ namespace ShopSphere.BuildingBlocks.EventBus.Outbox;
 public sealed class OutboxDispatcher<TContext> : BackgroundService
     where TContext : DbContext, IOutboxDbContext
 {
-    private static readonly TimeSpan PollInterval = TimeSpan.FromSeconds(5);
+    private static readonly TimeSpan PollInterval = TimeSpan.FromMilliseconds(300);
 
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger<OutboxDispatcher<TContext>> _logger;

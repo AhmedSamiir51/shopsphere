@@ -67,7 +67,7 @@ public sealed class OutboxInterceptor : SaveChangesInterceptor
 
             foreach (var domainEvent in domainEvents)
             {
-                await _mediator.Publish(domainEvent, cancellationToken);
+                await _mediator.Publish(new DomainEventNotification(domainEvent), cancellationToken);
             }
         }
     }
