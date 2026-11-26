@@ -1,0 +1,45 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="coverlet.collector" Version="6.0.0" />
+    <PackageReference Include="FluentAssertions" Version="7.2.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.12.0" />
+    <PackageReference Include="NSubstitute" Version="6.2.0" />
+    <PackageReference Include="NetArchTest.Rules" Version="1.3.2" />
+    <PackageReference Include="xunit" Version="2.9.3" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="4.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+
+  <ItemGroup>
+    </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Services\Ordering\ShopSphere.Ordering.Domain\ShopSphere.Ordering.Domain.csproj" />
+    <ProjectReference Include="..\..\src\Services\Ordering\ShopSphere.Ordering.Application\ShopSphere.Ordering.Application.csproj" />
+    <ProjectReference Include="..\..\src\Services\Catalog\ShopSphere.Catalog.Domain\ShopSphere.Catalog.Domain.csproj" />
+    <ProjectReference Include="..\..\src\Services\Catalog\ShopSphere.Catalog.Application\ShopSphere.Catalog.Application.csproj" />
+    <ProjectReference Include="..\..\src\Services\Inventory\ShopSphere.Inventory.Domain\ShopSphere.Inventory.Domain.csproj" />
+    <ProjectReference Include="..\..\src\Services\Inventory\ShopSphere.Inventory.Application\ShopSphere.Inventory.Application.csproj" />
+    <ProjectReference Include="..\..\src\Services\Payment\ShopSphere.Payment.Domain\ShopSphere.Payment.Domain.csproj" />
+    <ProjectReference Include="..\..\src\Services\Payment\ShopSphere.Payment.Application\ShopSphere.Payment.Application.csproj" />
+    <ProjectReference Include="..\..\src\Services\Notification\ShopSphere.Notification.Domain\ShopSphere.Notification.Domain.csproj" />
+    <ProjectReference Include="..\..\src\Services\Notification\ShopSphere.Notification.Application\ShopSphere.Notification.Application.csproj" />
+    <ProjectReference Include="..\..\src\Services\Identity\ShopSphere.Identity.Domain\ShopSphere.Identity.Domain.csproj" />
+    <ProjectReference Include="..\..\src\Services\Identity\ShopSphere.Identity.Application\ShopSphere.Identity.Application.csproj" />
+    <ProjectReference Include="..\..\src\Services\Cart\ShopSphere.Cart.Domain\ShopSphere.Cart.Domain.csproj" />
+    <ProjectReference Include="..\..\src\Services\Cart\ShopSphere.Cart.Application\ShopSphere.Cart.Application.csproj" />
+  </ItemGroup>
+</Project>
