@@ -99,6 +99,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShopSphere.Architecture.Tes
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShopSphere.Domain.Tests", "tests\ShopSphere.Domain.Tests\ShopSphere.Domain.Tests.csproj", "{31A82CC2-CE20-405A-A567-92532B929735}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShopSphere.Ordering.IntegrationTests", "tests\ShopSphere.Ordering.IntegrationTests\ShopSphere.Ordering.IntegrationTests.csproj", "{441407B5-FC94-4B3A-89A8-E9D4BDDE3A0B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -553,6 +555,18 @@ Global
 		{31A82CC2-CE20-405A-A567-92532B929735}.Release|x64.Build.0 = Release|Any CPU
 		{31A82CC2-CE20-405A-A567-92532B929735}.Release|x86.ActiveCfg = Release|Any CPU
 		{31A82CC2-CE20-405A-A567-92532B929735}.Release|x86.Build.0 = Release|Any CPU
+		{441407B5-FC94-4B3A-89A8-E9D4BDDE3A0B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{441407B5-FC94-4B3A-89A8-E9D4BDDE3A0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{441407B5-FC94-4B3A-89A8-E9D4BDDE3A0B}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{441407B5-FC94-4B3A-89A8-E9D4BDDE3A0B}.Debug|x64.Build.0 = Debug|Any CPU
+		{441407B5-FC94-4B3A-89A8-E9D4BDDE3A0B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{441407B5-FC94-4B3A-89A8-E9D4BDDE3A0B}.Debug|x86.Build.0 = Debug|Any CPU
+		{441407B5-FC94-4B3A-89A8-E9D4BDDE3A0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{441407B5-FC94-4B3A-89A8-E9D4BDDE3A0B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{441407B5-FC94-4B3A-89A8-E9D4BDDE3A0B}.Release|x64.ActiveCfg = Release|Any CPU
+		{441407B5-FC94-4B3A-89A8-E9D4BDDE3A0B}.Release|x64.Build.0 = Release|Any CPU
+		{441407B5-FC94-4B3A-89A8-E9D4BDDE3A0B}.Release|x86.ActiveCfg = Release|Any CPU
+		{441407B5-FC94-4B3A-89A8-E9D4BDDE3A0B}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -604,5 +618,6 @@ Global
 		{0A82D661-52C2-437D-A5CF-8910FCC7EC65} = {0E4DC883-1AD3-4603-BC88-E61FB221DE2C}
 		{16B405C9-36AF-4AA9-9D5E-38BD4FED2750} = {0E4DC883-1AD3-4603-BC88-E61FB221DE2C}
 		{31A82CC2-CE20-405A-A567-92532B929735} = {0E4DC883-1AD3-4603-BC88-E61FB221DE2C}
+		{441407B5-FC94-4B3A-89A8-E9D4BDDE3A0B} = {0E4DC883-1AD3-4603-BC88-E61FB221DE2C}
 	EndGlobalSection
 EndGlobal
