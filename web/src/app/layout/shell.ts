@@ -20,6 +20,7 @@ import { IconComponent, btn, inputClass, money } from '../ui/ui';
       <nav class="hidden md:flex items-center gap-1 text-sm font-medium">
         <a routerLink="/products" routerLinkActive="bg-muted" [routerLinkActiveOptions]="{exact:true}" class="rounded-md px-3 py-2 hover:bg-muted">Shop all</a>
         <a routerLink="/orders" routerLinkActive="bg-muted" class="rounded-md px-3 py-2 hover:bg-muted">Orders</a>
+        @if (auth.isAdmin()) { <a routerLink="/admin" routerLinkActive="bg-muted" class="rounded-md px-3 py-2 text-accent hover:bg-muted">Admin</a> }
       </nav>
       <form class="relative hidden flex-1 max-w-xl sm:block" (ngSubmit)="search()">
         <app-icon name="search" class="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />

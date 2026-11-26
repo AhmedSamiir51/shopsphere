@@ -46,7 +46,7 @@ export class CheckoutComponent {
   place() {
     const lines = this.cart.cart()!.lines;
     this.busy.set(true);
-    this.orders.place(lines.map(l => ({ productId: l.productId, productName: l.productName, quantity: l.quantity, unitPrice: l.unitPrice })))
+    this.orders.place(lines.map(l => ({ productId: l.productId, quantity: l.quantity })))
       .subscribe({
         next: r => { this.cart.clearLocal(); this.router.navigate(['/orders'], { queryParams: { placed: r.id } }); },
         error: e => { this.busy.set(false); this.error.set(e.error?.title ?? 'Could not place the order.'); }

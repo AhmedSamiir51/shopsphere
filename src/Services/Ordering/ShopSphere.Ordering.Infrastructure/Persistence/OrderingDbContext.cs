@@ -11,6 +11,7 @@ public sealed class OrderingDbContext : DbContext, IOutboxDbContext, IUnitOfWork
     public OrderingDbContext(DbContextOptions<OrderingDbContext> options) : base(options) { }
 
     public DbSet<Order> Orders => Set<Order>();
+    public DbSet<ProductSnapshot> ProductSnapshots => Set<ProductSnapshot>();
     public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
 
     protected override void OnModelCreating(ModelBuilder b)
@@ -41,6 +42,15 @@ public sealed class OrderingDbContext : DbContext, IOutboxDbContext, IUnitOfWork
                 m.Property(p => p.Amount).HasColumnName("unit_price").HasPrecision(18, 2);
                 m.Property(p => p.Currency).HasColumnName("unit_currency").HasMaxLength(3);
             });
+        });
+
+        b.Entity<ProductSnapshot>(p =>
+        {
+            p.ToTable("product_snapshots");
+            p.HasKey(x => x.ProductId);
+            p.Property(x => x.Name).HasMaxLength(200);
+            p.Property(x => x.Currency).HasMaxLength(3);
+            p.Property(x => x.Price).HasPrecision(18, 2);
         });
 
         b.Entity<OutboxMessage>(m =>

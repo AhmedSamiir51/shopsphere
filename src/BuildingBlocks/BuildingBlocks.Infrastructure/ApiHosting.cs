@@ -1,4 +1,6 @@
 using System.Text;
+using System.Threading.RateLimiting;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Logging;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -40,6 +42,15 @@ public static class ApiHosting
             .WithOrigins((config["Cors:Origins"] ?? "http://localhost:4200").Split(',', StringSplitOptions.RemoveEmptyEntries))
             .AllowAnyHeader().AllowAnyMethod()));
 
+        // Brute-force protection: "auth" policy = 10 attempts/minute per client IP.
+        services.AddRateLimiter(o =>
+        {
+            o.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+            o.AddPolicy("auth", ctx => RateLimitPartition.GetFixedWindowLimiter(
+                ctx.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+                _ => new FixedWindowRateLimiterOptions { PermitLimit = int.Parse(config["RateLimit:AuthPerMinute"] ?? "10"), Window = TimeSpan.FromMinutes(1) }));
+        });
+
         services.AddProblemDetails();
         services.AddExceptionHandler<GlobalExceptionHandler>();
         services.AddHealthChecks();
@@ -51,6 +62,7 @@ public static class ApiHosting
     {
         app.UseExceptionHandler();
         app.UseCors();
+        app.UseRateLimiter();
         app.UseAuthentication();
         app.UseAuthorization();
         app.MapHealthChecks("/health");

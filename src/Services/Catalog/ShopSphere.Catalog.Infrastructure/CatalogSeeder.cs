@@ -37,6 +37,7 @@ public static class CatalogSeeder
             ("Espresso Machine Pro", "HM-3001", "15-bar pump, milk frother.", 7999m, 2, 4.7, 890),
             ("Air Fryer 6L", "HM-3002", "Digital controls, 8 presets.", 2499m, 2, 4.6, 3120),
             ("Memory Foam Pillow", "HM-3003", "Ergonomic, cooling cover.", 449m, 2, 4.4, 1750),
+            ("Demo: Payment Decline Test Item", "DM-9999", "Priced to end in .99 so the simulated bank declines it. Use it to demo the cancellation and stock-release path.", 99.99m, 2, 4.0, 12),
             ("Yoga Mat Non-Slip", "SP-4001", "6mm thick, carry strap included.", 399m, 3, 4.5, 960),
             ("Adjustable Dumbbell Set", "SP-4002", "2-24 kg quick-change.", 6499m, 3, 4.8, 720),
         };

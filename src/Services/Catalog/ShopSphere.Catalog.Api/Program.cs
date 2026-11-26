@@ -17,6 +17,9 @@ services.AddOpenApi();
 services.AddApplicationCore(typeof(SearchProductsQuery).Assembly);
 services.AddShopSphereDbContext<CatalogDbContext>(builder.Configuration);
 services.AddScoped<IProductRepository, ProductRepository>();
+services.AddSingleton<StackExchange.Redis.IConnectionMultiplexer>(_ => StackExchange.Redis.ConnectionMultiplexer.Connect(
+    builder.Configuration.GetConnectionString("Redis") ?? "localhost:6379,abortConnect=false"));
+services.AddSingleton<ICatalogCache, RedisCatalogCache>();
 services.AddShopSphereEventBus(builder.Configuration, "catalog");
 
 var app = builder.Build();
@@ -35,6 +38,9 @@ api.MapPost("/products", async (CreateProductCommand c, ISender m, CancellationT
     Results.Created("/api/products", new { id = await m.Send(c, ct) })).RequireAuthorization(p => p.RequireRole("Admin"));
 api.MapPut("/products/{id:guid}/price", async (Guid id, ChangePriceBody b, ISender m, CancellationToken ct) =>
 { await m.Send(new ChangePriceCommand(id, b.NewPrice), ct); return Results.NoContent(); }).RequireAuthorization(p => p.RequireRole("Admin"));
+
+api.MapDelete("/products/{id:guid}", async (Guid id, ISender m, CancellationToken ct) =>
+{ await m.Send(new DiscontinueProductCommand(id), ct); return Results.NoContent(); }).RequireAuthorization(p => p.RequireRole("Admin"));
 
 app.Run();
 

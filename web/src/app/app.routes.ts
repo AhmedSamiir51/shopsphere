@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { authGuard } from './core/guards';
+import { adminGuard, authGuard } from './core/guards';
 
 export const routes: Routes = [
   { path: '', loadComponent: () => import('./pages/home').then(m => m.HomeComponent), title: 'ShopSphere' },
@@ -9,5 +9,6 @@ export const routes: Routes = [
   { path: 'register', loadComponent: () => import('./pages/auth').then(m => m.AuthComponent), data: { register: true }, title: 'Sign up' },
   { path: 'checkout', canActivate: [authGuard], loadComponent: () => import('./pages/checkout').then(m => m.CheckoutComponent) },
   { path: 'orders', canActivate: [authGuard], loadComponent: () => import('./pages/orders').then(m => m.OrdersComponent), title: 'Orders' },
+  { path: 'admin', canActivate: [adminGuard], loadComponent: () => import('./pages/admin').then(m => m.AdminComponent), title: 'Admin' },
   { path: '**', redirectTo: '' }
 ];

@@ -53,6 +53,7 @@ services:
     environment:
       <<: *env
       ConnectionStrings__Default: Host=postgres;Database=ordering;Username=postgres;Password=postgres
+      Services__Catalog: http://catalog-api:8080/
   inventory-api:
     <<: *service
     build: { context: ., dockerfile: deploy/Dockerfile, args: { PROJECT: src/Services/Inventory/ShopSphere.Inventory.Api, ASSEMBLY: ShopSphere.Inventory.Api } }

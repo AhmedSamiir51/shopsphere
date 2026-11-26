@@ -23,6 +23,8 @@ public sealed record CreateProductCommand(string Name, string Sku, string Descri
 
 public sealed record ChangePriceCommand(Guid ProductId, decimal NewPrice) : IRequest;
 
+public sealed record DiscontinueProductCommand(Guid ProductId) : IRequest;
+
 public sealed class CreateProductValidator : AbstractValidator<CreateProductCommand>
 {
     public CreateProductValidator()
@@ -43,24 +45,39 @@ internal static class ProductMapping
 public sealed class SearchProductsHandler : IRequestHandler<SearchProductsQuery, PagedResult<ProductDto>>
 {
     private readonly IProductRepository _products;
-    public SearchProductsHandler(IProductRepository products) => _products = products;
+    private readonly ICatalogCache _cache;
+    public SearchProductsHandler(IProductRepository products, ICatalogCache cache) { _products = products; _cache = cache; }
 
     public async Task<PagedResult<ProductDto>> Handle(SearchProductsQuery q, CancellationToken ct)
     {
         var page = Math.Max(1, q.Page);
         var size = Math.Clamp(q.PageSize, 1, 60);
+        var key = $"search:{q.Query?.Trim().ToLowerInvariant()}|{q.CategoryId}|{q.MinPrice}|{q.MaxPrice}|{q.Sort}|{page}|{size}";
+        var cached = await _cache.GetAsync<PagedResult<ProductDto>>(key, ct);
+        if (cached is not null) return cached;
+
         var (items, total) = await _products.SearchAsync(q.Query, q.CategoryId, q.MinPrice, q.MaxPrice, q.Sort, page, size, ct);
-        return new PagedResult<ProductDto>(items.Select(i => i.ToDto()).ToList(), total, page, size);
+        var result = new PagedResult<ProductDto>(items.Select(i => i.ToDto()).ToList(), total, page, size);
+        await _cache.SetAsync(key, result, TimeSpan.FromMinutes(5), ct);
+        return result;
     }
 }
 
 public sealed class GetProductHandler : IRequestHandler<GetProductQuery, ProductDto>
 {
     private readonly IProductRepository _products;
-    public GetProductHandler(IProductRepository products) => _products = products;
+    private readonly ICatalogCache _cache;
+    public GetProductHandler(IProductRepository products, ICatalogCache cache) { _products = products; _cache = cache; }
 
-    public async Task<ProductDto> Handle(GetProductQuery q, CancellationToken ct) =>
-        (await _products.GetAsync(q.Id, ct) ?? throw new DomainException("Product not found.")).ToDto();
+    public async Task<ProductDto> Handle(GetProductQuery q, CancellationToken ct)
+    {
+        var key = $"product:{q.Id}";
+        var cached = await _cache.GetAsync<ProductDto>(key, ct);
+        if (cached is not null) return cached;
+        var dto = (await _products.GetAsync(q.Id, ct) ?? throw new DomainException("Product not found.")).ToDto();
+        await _cache.SetAsync(key, dto, TimeSpan.FromMinutes(10), ct);
+        return dto;
+    }
 }
 
 public sealed class CreateProductHandler : IRequestHandler<CreateProductCommand, Guid>
@@ -68,10 +85,11 @@ public sealed class CreateProductHandler : IRequestHandler<CreateProductCommand,
     private readonly IProductRepository _products;
     private readonly IUnitOfWork _uow;
     private readonly IIntegrationEventCollector _events;
+    private readonly ICatalogCache _cache;
 
-    public CreateProductHandler(IProductRepository products, IUnitOfWork uow, IIntegrationEventCollector events)
+    public CreateProductHandler(IProductRepository products, IUnitOfWork uow, IIntegrationEventCollector events, ICatalogCache cache)
     {
-        _products = products; _uow = uow; _events = events;
+        _products = products; _uow = uow; _events = events; _cache = cache;
     }
 
     public async Task<Guid> Handle(CreateProductCommand c, CancellationToken ct)
@@ -80,6 +98,7 @@ public sealed class CreateProductHandler : IRequestHandler<CreateProductCommand,
         await _products.AddAsync(product, ct);
         _events.Collect(new ProductCreatedIntegrationEvent(product.Id, product.Name, product.Sku, product.Price, product.Currency, product.CategoryId));
         await _uow.SaveChangesAsync(ct);
+        await _cache.InvalidateAsync(ct);
         return product.Id;
     }
 }
@@ -89,10 +108,11 @@ public sealed class ChangePriceHandler : IRequestHandler<ChangePriceCommand>
     private readonly IProductRepository _products;
     private readonly IUnitOfWork _uow;
     private readonly IIntegrationEventCollector _events;
+    private readonly ICatalogCache _cache;
 
-    public ChangePriceHandler(IProductRepository products, IUnitOfWork uow, IIntegrationEventCollector events)
+    public ChangePriceHandler(IProductRepository products, IUnitOfWork uow, IIntegrationEventCollector events, ICatalogCache cache)
     {
-        _products = products; _uow = uow; _events = events;
+        _products = products; _uow = uow; _events = events; _cache = cache;
     }
 
     public async Task Handle(ChangePriceCommand c, CancellationToken ct)
@@ -103,5 +123,28 @@ public sealed class ChangePriceHandler : IRequestHandler<ChangePriceCommand>
         if (product.Price != old)
             _events.Collect(new ProductPriceChangedIntegrationEvent(product.Id, old, product.Price, product.Currency));
         await _uow.SaveChangesAsync(ct);
+        await _cache.InvalidateAsync(ct);
+    }
+}
+
+public sealed class DiscontinueProductHandler : IRequestHandler<DiscontinueProductCommand>
+{
+    private readonly IProductRepository _products;
+    private readonly IUnitOfWork _uow;
+    private readonly IIntegrationEventCollector _events;
+    private readonly ICatalogCache _cache;
+
+    public DiscontinueProductHandler(IProductRepository products, IUnitOfWork uow, IIntegrationEventCollector events, ICatalogCache cache)
+    {
+        _products = products; _uow = uow; _events = events; _cache = cache;
+    }
+
+    public async Task Handle(DiscontinueProductCommand c, CancellationToken ct)
+    {
+        var product = await _products.GetAsync(c.ProductId, ct) ?? throw new DomainException("Product not found.");
+        product.Discontinue();
+        _events.Collect(new ProductDiscontinuedIntegrationEvent(product.Id));
+        await _uow.SaveChangesAsync(ct);
+        await _cache.InvalidateAsync(ct);
     }
 }

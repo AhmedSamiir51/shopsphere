@@ -76,10 +76,21 @@ export class CartService {
 @Injectable({ providedIn: 'root' })
 export class OrderService {
   private http = inject(HttpClient);
-  place(items: { productId: string; productName: string; quantity: number; unitPrice: number }[]) {
-    return this.http.post<{ id: string }>(`${API}/orders`, { currency: 'EGP', items });
+  /** The server prices the order from the catalog; only ids and quantities are sent. */
+  place(items: { productId: string; quantity: number }[]) {
+    return this.http.post<{ id: string }>(`${API}/orders`, { items });
   }
   mine() { return this.http.get<Order[]>(`${API}/orders`); }
   get(id: string) { return this.http.get<Order>(`${API}/orders/${id}`); }
   cancel(id: string) { return this.http.post<void>(`${API}/orders/${id}/cancel`, {}); }
+}
+
+@Injectable({ providedIn: 'root' })
+export class AdminService {
+  private http = inject(HttpClient);
+  create(p: { name: string; sku: string; description: string; price: number; currency: string; imageUrl: string; categoryId: string }) {
+    return this.http.post<{ id: string }>(`${API}/products`, p);
+  }
+  changePrice(id: string, newPrice: number) { return this.http.put<void>(`${API}/products/${id}/price`, { newPrice }); }
+  discontinue(id: string) { return this.http.delete<void>(`${API}/products/${id}`); }
 }

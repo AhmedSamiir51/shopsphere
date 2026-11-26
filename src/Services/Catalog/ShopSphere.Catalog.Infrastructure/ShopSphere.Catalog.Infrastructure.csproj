@@ -5,6 +5,7 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="StackExchange.Redis" Version="3.4.35" />
     <ProjectReference Include="../ShopSphere.Catalog.Application/ShopSphere.Catalog.Application.csproj" />
     <ProjectReference Include="../../../BuildingBlocks/BuildingBlocks.Infrastructure/ShopSphere.BuildingBlocks.Infrastructure.csproj" />
     <ProjectReference Include="../../../BuildingBlocks/BuildingBlocks.EventBus/ShopSphere.BuildingBlocks.EventBus.csproj" />

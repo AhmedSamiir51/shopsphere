@@ -26,12 +26,24 @@ services.AddSingleton<ITokenService, JwtTokenService>();
 
 var app = builder.Build();
 await app.EnsureDatabaseAsync<IdentityDbContext>();
+// Demo admin account (override with Admin:Email / Admin:Password; change in any real deployment).
+using (var scope = app.Services.CreateScope())
+{
+    var users = scope.ServiceProvider.GetRequiredService<IUserRepository>();
+    var email = app.Configuration["Admin:Email"] ?? "admin@shopsphere.dev";
+    if (await users.GetByEmailAsync(email, default) is null)
+    {
+        var hasher = scope.ServiceProvider.GetRequiredService<IPasswordHasher>();
+        await users.AddAsync(User.Register(email, "Admin", hasher.Hash(app.Configuration["Admin:Password"] ?? "Admin123!"), UserRole.Admin), default);
+        await scope.ServiceProvider.GetRequiredService<ShopSphere.BuildingBlocks.Application.Abstractions.IUnitOfWork>().SaveChangesAsync(default);
+    }
+}
 app.UseShopSphereApi();
 if (app.Environment.IsDevelopment()) app.MapOpenApi();
 
 var auth = app.MapGroup("/api/auth");
-auth.MapPost("/register", async (RegisterCommand c, ISender m, CancellationToken ct) => Results.Ok(await m.Send(c, ct)));
-auth.MapPost("/login", async (LoginCommand c, ISender m, CancellationToken ct) => Results.Ok(await m.Send(c, ct)));
+auth.MapPost("/register", async (RegisterCommand c, ISender m, CancellationToken ct) => Results.Ok(await m.Send(c, ct))).RequireRateLimiting("auth");
+auth.MapPost("/login", async (LoginCommand c, ISender m, CancellationToken ct) => Results.Ok(await m.Send(c, ct))).RequireRateLimiting("auth");
 auth.MapGet("/me", (ClaimsPrincipal u) => Results.Ok(new
 {
     id = u.FindFirst("sub")?.Value, email = u.FindFirst("email")?.Value, name = u.FindFirst("name")?.Value,
