@@ -67,7 +67,7 @@ export class AdminComponent {
   reload() { this.catalog.search({ pageSize: 60, sort: 'relevance' }).subscribe(r => this.products.set(r.items)); }
   private done(msg: string, err = false) { this.message.set(msg); this.isError.set(err); }
   create() {
-    this.admin.create({ ...this.f, price: this.f.price!, imageUrl: this.f.imageUrl || `https://picsum.photos/seed/${this.f.sku}/600/600` }).subscribe({
+    this.admin.create({ ...this.f, price: this.f.price!, imageUrl: this.f.imageUrl || "/products/default.svg" }).subscribe({
       next: () => { this.done('Product created.'); this.reload(); },
       error: e => this.done(e.error?.title ?? 'Could not create product.', true)
     });

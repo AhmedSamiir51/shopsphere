@@ -42,7 +42,7 @@ import { IconComponent, btn } from '../ui/ui';
     <div class="mt-5 grid grid-cols-2 gap-4 md:grid-cols-4">
       @for (c of categories(); track c.id) {
         <a routerLink="/products" [queryParams]="{categoryId: c.id}" class="group relative flex h-36 items-end overflow-hidden rounded-xl bg-muted p-5">
-          <img [src]="'https://picsum.photos/seed/' + c.slug + '/500/300'" alt="" class="absolute inset-0 size-full object-cover transition-transform duration-500 group-hover:scale-105" />
+          <img [src]="'/products/cat-' + c.slug + '.svg'" alt="" class="absolute inset-0 size-full object-cover transition-transform duration-500 group-hover:scale-105" />
           <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
           <span class="relative text-lg font-bold text-white">{{ c.name }}</span>
         </a>

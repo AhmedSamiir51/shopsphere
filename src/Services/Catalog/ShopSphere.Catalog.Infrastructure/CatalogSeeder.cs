@@ -45,7 +45,7 @@ public static class CatalogSeeder
         foreach (var (name, sku, desc, price, cat, rating, reviews) in rows)
         {
             var p = Product.Create(name, sku, desc, price, "EGP",
-                $"https://picsum.photos/seed/{sku}/600/600", cats[cat].Id, rating, reviews);
+                $"/products/{sku}.svg", cats[cat].Id, rating, reviews);
             db.Products.Add(p);
             events.Collect(new ProductCreatedIntegrationEvent(p.Id, p.Name, p.Sku, p.Price, p.Currency, p.CategoryId));
         }

@@ -16,7 +16,7 @@ import { btn, cn, inputClass } from '../ui/ui';
         <h1 class="text-3xl font-extrabold tracking-tight">{{ q() ? 'Results for "' + q() + '"' : 'All products' }}</h1>
         <p class="mt-1 text-sm text-muted-foreground">{{ result()?.total ?? 0 }} items</p>
       </div>
-      <select [class]="inputClass + ' w-52'" [ngModel]="sort() ?? 'relevance'" (ngModelChange)="set({sort: $event, page: null})" aria-label="Sort">
+      <select [class]="sortClass" [ngModel]="sort() ?? 'relevance'" (ngModelChange)="set({sort: $event, page: null})" aria-label="Sort">
         <option value="relevance">Most popular</option>
         <option value="rating">Top rated</option>
         <option value="price-asc">Price: low to high</option>
@@ -85,7 +85,7 @@ export class ProductsComponent {
   loading = signal(true);
   min: number | null = null;
   max: number | null = null;
-  btn = btn; inputClass = inputClass;
+  btn = btn; inputClass = inputClass; sortClass = cn(inputClass, 'w-52');
   page = () => Number(this.pageParam() ?? 1);
   pages = () => Math.ceil((this.result()?.total ?? 0) / 12);
   pageNumbers = () => Array.from({ length: this.pages() }, (_, i) => i + 1);
