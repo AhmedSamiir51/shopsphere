@@ -103,6 +103,35 @@ dotnet test ShopSphere.sln          # domain, saga/application and architecture 
 cd web && npx ng test --no-watch    # Angular unit tests (Vitest)
 ```
 
+## Messaging and caching patterns
+
+**RabbitMQ (topic exchange, one queue per service)**
+- *Transactional outbox*: events are written to an `outbox` table in the same DB transaction as the state change; a background dispatcher (300 ms poll) publishes them. No lost events if the broker is down.
+- *Inbox / idempotent consumers*: each consumer records processed message ids, so redelivery never double-applies.
+- *Dead-letter queues*: messages that keep failing go to a DLQ instead of blocking or vanishing.
+- *Publisher confirms and manual acks*: a message is acked only after it is handled.
+- *Choreographed saga*: `OrderCreated -> StockReserved -> PaymentRequested -> PaymentSucceeded -> OrderConfirmed`, with compensation (`PaymentFailed -> OrderCancelled -> stock released`).
+
+**Redis**
+- Cart storage (Cart service).
+- Catalog *cache-aside* for product lists and details; admin changes bump a version key so all stale entries are invalidated at once. If Redis is down, Catalog falls back to Postgres.
+
+**Other system-design points**
+- Server-side pricing: Ordering keeps its own `product_snapshots` read model fed by Catalog events (HTTP fallback). The client sends only product id and quantity.
+- Database per service, JWT with roles, auth rate limit (10 req/min per IP, then 429).
+
+## Run without Docker
+
+`scripts/run-local.sh` starts the 7 services and the gateway against local Postgres, Redis and RabbitMQ (gateway on :8088); `node scripts/serve-web.mjs` serves the built SPA on :4200; `scripts/e2e.sh` runs a full order through the gateway.
+
+Demo credentials: admin `admin@shopsphere.dev` / `Admin123!` (override with `Admin:Email` / `Admin:Password`). Customers register themselves. The product "Demo: Payment Decline Test Item" is always declined by the simulated bank.
+
+## Honest limits
+
+- `docker compose up` is provided but was not run in the authoring sandbox (no Docker there); the stack was verified end to end with local Postgres, Redis and RabbitMQ.
+- Payment is simulated; no real bank or card is involved.
+- Testcontainers integration tests are planned and run only where Docker exists (CI).
+
 ## Tech notes
 
 - .NET 10, C# latest, EF Core 10, FluentValidation 12, RabbitMQ.Client 7 (async API).
@@ -111,7 +140,7 @@ cd web && npx ng test --no-watch    # Angular unit tests (Vitest)
 
 ## Roadmap
 
-Admin dashboard, Testcontainers integration tests, OpenTelemetry tracing, Kubernetes manifests.
+Testcontainers integration tests, OpenTelemetry tracing, Kubernetes manifests.
 
 ## License
 
