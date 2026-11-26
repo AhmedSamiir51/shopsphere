@@ -1,0 +1,43 @@
+## .NET / Visual Studio
+bin/
+obj/
+out/
+[Dd]ebug/
+[Rr]elease/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+.vs/
+.vscode/
+.idea/
+*.nupkg
+project.lock.json
+*.log
+TestResults/
+coverage*.xml
+coverage*.json
+*.coverage
+artifacts/
+
+## Environment / secrets
+.env
+.env.*
+!.env.example
+appsettings.*.Local.json
+secrets.json
+
+## Node / Angular
+node_modules/
+dist/
+.angular/
+npm-debug.log*
+yarn-error.log*
+
+## Docker / data
+**/*.db
+pgdata/
+
+## OS
+.DS_Store
+Thumbs.db

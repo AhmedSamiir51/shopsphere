@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../ShopSphere.Identity.Domain/ShopSphere.Identity.Domain.csproj" />
+    <ProjectReference Include="../../../BuildingBlocks/BuildingBlocks.Application/ShopSphere.BuildingBlocks.Application.csproj" />
+    <ProjectReference Include="../../../BuildingBlocks/Contracts/ShopSphere.Contracts.csproj" />
+  </ItemGroup>
+</Project>

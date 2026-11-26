@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../ShopSphere.Notification.Application/ShopSphere.Notification.Application.csproj" />
+    <ProjectReference Include="../../../BuildingBlocks/BuildingBlocks.Infrastructure/ShopSphere.BuildingBlocks.Infrastructure.csproj" />
+    <ProjectReference Include="../../../BuildingBlocks/BuildingBlocks.EventBus/ShopSphere.BuildingBlocks.EventBus.csproj" />
+  </ItemGroup>
+</Project>
