@@ -1,0 +1,7 @@
+CREATE DATABASE identity;
+CREATE DATABASE catalog;
+CREATE DATABASE cart;
+CREATE DATABASE ordering;
+CREATE DATABASE inventory;
+CREATE DATABASE payment;
+CREATE DATABASE notification;

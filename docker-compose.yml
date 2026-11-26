@@ -1,0 +1,85 @@
+# ShopSphere local stack: `docker compose up --build`
+# Web: http://localhost:4200   Gateway: http://localhost:8080   RabbitMQ UI: http://localhost:15672 (guest/guest)
+x-service: &service
+  restart: unless-stopped
+  depends_on:
+    rabbitmq: { condition: service_healthy }
+    postgres: { condition: service_healthy }
+  environment: &env
+    ASPNETCORE_URLS: http://+:8080
+    Jwt__Secret: ${JWT_SECRET:-dev-only-secret-change-me-0123456789abcdef}
+    Jwt__Issuer: shopsphere
+    Jwt__Audience: shopsphere-clients
+    ConnectionStrings__RabbitMQ: amqp://guest:guest@rabbitmq:5672
+    Cors__Origins: http://localhost:4200
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment: { POSTGRES_USER: postgres, POSTGRES_PASSWORD: postgres }
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./deploy/init-databases.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck: { test: ["CMD-SHELL", "pg_isready -U postgres"], interval: 5s, timeout: 3s, retries: 20 }
+  rabbitmq:
+    image: rabbitmq:4-management-alpine
+    ports: ["5672:5672", "15672:15672"]
+    healthcheck: { test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"], interval: 10s, timeout: 5s, retries: 20 }
+  redis:
+    image: redis:7-alpine
+    healthcheck: { test: ["CMD", "redis-cli", "ping"], interval: 5s, timeout: 3s, retries: 20 }
+  identity-api:
+    <<: *service
+    build: { context: ., dockerfile: deploy/Dockerfile, args: { PROJECT: src/Services/Identity/ShopSphere.Identity.Api, ASSEMBLY: ShopSphere.Identity.Api } }
+    environment:
+      <<: *env
+      ConnectionStrings__Default: Host=postgres;Database=identity;Username=postgres;Password=postgres
+  catalog-api:
+    <<: *service
+    build: { context: ., dockerfile: deploy/Dockerfile, args: { PROJECT: src/Services/Catalog/ShopSphere.Catalog.Api, ASSEMBLY: ShopSphere.Catalog.Api } }
+    environment:
+      <<: *env
+      ConnectionStrings__Default: Host=postgres;Database=catalog;Username=postgres;Password=postgres
+  cart-api:
+    <<: *service
+    build: { context: ., dockerfile: deploy/Dockerfile, args: { PROJECT: src/Services/Cart/ShopSphere.Cart.Api, ASSEMBLY: ShopSphere.Cart.Api } }
+    environment:
+      <<: *env
+      ConnectionStrings__Default: Host=postgres;Database=cart;Username=postgres;Password=postgres
+      ConnectionStrings__Redis: redis:6379,abortConnect=false
+  ordering-api:
+    <<: *service
+    build: { context: ., dockerfile: deploy/Dockerfile, args: { PROJECT: src/Services/Ordering/ShopSphere.Ordering.Api, ASSEMBLY: ShopSphere.Ordering.Api } }
+    environment:
+      <<: *env
+      ConnectionStrings__Default: Host=postgres;Database=ordering;Username=postgres;Password=postgres
+  inventory-api:
+    <<: *service
+    build: { context: ., dockerfile: deploy/Dockerfile, args: { PROJECT: src/Services/Inventory/ShopSphere.Inventory.Api, ASSEMBLY: ShopSphere.Inventory.Api } }
+    environment:
+      <<: *env
+      ConnectionStrings__Default: Host=postgres;Database=inventory;Username=postgres;Password=postgres
+  payment-api:
+    <<: *service
+    build: { context: ., dockerfile: deploy/Dockerfile, args: { PROJECT: src/Services/Payment/ShopSphere.Payment.Api, ASSEMBLY: ShopSphere.Payment.Api } }
+    environment:
+      <<: *env
+      ConnectionStrings__Default: Host=postgres;Database=payment;Username=postgres;Password=postgres
+  notification-api:
+    <<: *service
+    build: { context: ., dockerfile: deploy/Dockerfile, args: { PROJECT: src/Services/Notification/ShopSphere.Notification.Api, ASSEMBLY: ShopSphere.Notification.Api } }
+    environment:
+      <<: *env
+      ConnectionStrings__Default: Host=postgres;Database=notification;Username=postgres;Password=postgres
+  gateway:
+    build: { context: ., dockerfile: deploy/Dockerfile, args: { PROJECT: src/ApiGateway, ASSEMBLY: ShopSphere.ApiGateway } }
+    ports: ["8080:8080"]
+    environment: { ASPNETCORE_URLS: "http://+:8080", Cors__Origins: "http://localhost:4200" }
+    depends_on: [identity-api, catalog-api, cart-api, ordering-api, inventory-api, payment-api, notification-api]
+  web:
+    build: { context: ./web, dockerfile: Dockerfile }
+    ports: ["4200:80"]
+    depends_on: [gateway]
+
+volumes:
+  pgdata:
