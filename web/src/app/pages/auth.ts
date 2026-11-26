@@ -22,8 +22,8 @@ import { btn, inputClass } from '../ui/ui';
       <button type="submit" [disabled]="busy()" [class]="btn({variant:'default',size:'lg'}, 'w-full')">{{ register() ? 'Sign up' : 'Sign in' }}</button>
     </form>
     <p class="mt-6 text-center text-sm text-muted-foreground">
-      @if (register()) { Have an account? <a routerLink="/login" class="font-medium text-foreground underline">Sign in</a> }
-      @else { New here? <a routerLink="/register" class="font-medium text-foreground underline">Create an account</a> }
+      @if (register()) { Have an account? <a routerLink="/login" queryParamsHandling="preserve" class="font-medium text-foreground underline">Sign in</a> }
+      @else { New here? <a routerLink="/register" queryParamsHandling="preserve" class="font-medium text-foreground underline">Create an account</a> }
     </p>
   </div>`
 })
