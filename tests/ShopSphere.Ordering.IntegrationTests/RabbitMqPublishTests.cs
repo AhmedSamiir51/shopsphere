@@ -26,7 +26,7 @@ public sealed class RabbitMqPublishTests : IAsyncLifetime
         await using var ch = await conn.CreateChannelAsync();
 
         await ch.ExchangeDeclareAsync(RabbitMqEventBus.ExchangeName, ExchangeType.Topic, durable: true);
-        var q = await ch.QueueDeclareAsync(queue: "test.q", durable: false, exclusive: false, autoDelete: true);
+        var q = await ch.QueueDeclareAsync(queue: "test.q", durable: false, exclusive: true, autoDelete: true);
         await ch.QueueBindAsync(q.QueueName, RabbitMqEventBus.ExchangeName, nameof(OrderConfirmedIntegrationEvent));
 
         var received = new TaskCompletionSource<BasicDeliverEventArgs>(TaskCreationOptions.RunContinuationsAsynchronously);
