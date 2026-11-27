@@ -20,5 +20,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Services\Ordering\ShopSphere.Ordering.Infrastructure\ShopSphere.Ordering.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\BuildingBlocks\BuildingBlocks.EventBus\ShopSphere.BuildingBlocks.EventBus.csproj" />
   </ItemGroup>
 </Project>

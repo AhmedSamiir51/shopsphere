@@ -32,6 +32,7 @@ export const inputClass =
 
 const ICONS: Record<string, string> = {
   cart: 'M6 6h15l-1.5 9h-12zM6 6L5 3H2M9 20a1 1 0 100-2 1 1 0 000 2zM18 20a1 1 0 100-2 1 1 0 000 2z',
+  menu: 'M4 6h16M4 12h16M4 18h16',
   search: 'M21 21l-4.3-4.3M11 18a7 7 0 110-14 7 7 0 010 14z',
   user: 'M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2M12 11a4 4 0 100-8 4 4 0 000 8z',
   star: 'M12 2l3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z',

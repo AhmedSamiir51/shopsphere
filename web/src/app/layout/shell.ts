@@ -13,6 +13,7 @@ import { IconComponent, btn, inputClass, money } from '../ui/ui';
   </div>
   <header class="sticky top-0 z-40 border-b bg-background/85 backdrop-blur">
     <div class="mx-auto flex h-16 max-w-7xl items-center gap-6 px-4">
+      <button [class]="btn({variant:'ghost',size:'icon'}, 'md:hidden -ml-2')" (click)="menu.set(!menu())" aria-label="Menu"><app-icon [name]="menu() ? 'x' : 'menu'" [size]="22" /></button>
       <a routerLink="/" class="flex items-center gap-2 text-xl font-extrabold tracking-tight">
         <span class="grid size-8 place-items-center rounded-lg bg-accent text-accent-foreground"><app-icon name="package" [size]="18"/></span>
         ShopSphere
@@ -41,6 +42,19 @@ import { IconComponent, btn, inputClass, money } from '../ui/ui';
         </button>
       </div>
     </div>
+    @if (menu()) {
+      <div class="border-t bg-background px-4 py-3 md:hidden">
+        <form class="relative mb-3" (ngSubmit)="search(); menu.set(false)">
+          <app-icon name="search" class="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+          <input name="mq" [(ngModel)]="q" placeholder="Search products" [class]="inputClass + ' pl-10 bg-muted border-transparent'" />
+        </form>
+        <nav class="flex flex-col text-sm font-medium" (click)="menu.set(false)">
+          <a routerLink="/products" class="rounded-md px-3 py-3 hover:bg-muted">Shop all</a>
+          <a routerLink="/orders" class="rounded-md px-3 py-3 hover:bg-muted">Orders</a>
+          @if (auth.isAdmin()) { <a routerLink="/admin" class="rounded-md px-3 py-3 text-accent hover:bg-muted">Admin</a> }
+        </nav>
+      </div>
+    }
   </header>
 
   <main class="min-h-[70vh]"><router-outlet /></main>
@@ -101,6 +115,7 @@ export class ShellComponent {
   cart = inject(CartService);
   private router = inject(Router);
   q = '';
+  menu = signal(false);
   btn = btn; inputClass = inputClass; money = money;
   constructor() { this.cart.refresh(); }
   search() { this.router.navigate(['/products'], { queryParams: { q: this.q || null } }); }

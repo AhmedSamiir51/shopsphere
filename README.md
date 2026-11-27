@@ -130,7 +130,7 @@ Demo credentials: admin `admin@shopsphere.dev` / `Admin123!` (override with `Adm
 
 - `docker compose up` is provided but was not run in the authoring sandbox (no Docker there); the stack was verified end to end with local Postgres, Redis and RabbitMQ.
 - Payment is simulated; no real bank or card is involved.
-- Testcontainers integration tests are planned and run only where Docker exists (CI).
+- Testcontainers integration tests (Postgres persistence, RabbitMQ publishing) need Docker, so they run in CI only, not in the authoring sandbox.
 
 ## Tech notes
 
